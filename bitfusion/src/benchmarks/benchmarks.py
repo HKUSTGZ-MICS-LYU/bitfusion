@@ -28,7 +28,7 @@ def fc(tensor_in, output_channels=1024,
         with get_default_graph().name_scope(act):
             act = _fc
     else:
-        raise ValueError, 'Unknown activation type {}'.format(act)
+        raise ValueError('Unknown activation type {}'.format(act))
 
     return act
 
@@ -56,7 +56,7 @@ def conv(tensor_in, filters=32, stride=None, kernel_size=3, pad='SAME',
         with get_default_graph().name_scope(act):
             act = _conv
     else:
-        raise ValueError, 'Unknown activation type {}'.format(act)
+        raise ValueError('Unknown activation type {}'.format(act))
 
     return act
 
@@ -90,8 +90,8 @@ def get_bench_nn(bench_name, WRPN=False):
             return get_resnet_18_wrpn()
         else:
             return get_resnet_18_twn()
-    elif bench_name == 'RESNET-20':
-        return get_resnet_20_twn()
+    # elif bench_name == 'RESNET-20':
+    #     return get_resnet_20_twn()
     elif bench_name == 'RNN':
         return get_RNN('RNN', 2048)
     elif bench_name == 'LSTM':
@@ -114,7 +114,7 @@ def write_to_csv(csv_name, fields, stats, graph, csv_path='./'):
 
 def get_bench_numbers(graph, sim_obj, batch_size=1):
     stats = {}
-    for opname, op in graph.op_registry.iteritems():
+    for opname, op in graph.op_registry.items():
         out = sim_obj.get_cycles(op, batch_size)
         if out is not None:
             s, l = out
@@ -734,7 +734,7 @@ if __name__ == "__main__":
 
     # Read config file
     logger.info('Creating benchmarks')
-
+    from simulator.simulator import Simulator
     sim_obj = Simulator(args.config_file, args.verbose)
     fields = ['Layer', 'Total Cycles', 'Memory Stall Cycles', \
               'Activation Reads', 'Weight Reads', 'Output Reads', \

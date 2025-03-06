@@ -125,12 +125,13 @@ class SimulatorSweep(object):
                                                     self.sweep_df = pandas.read_csv(self.csv_filename)
                                                 else:
                                                     self.sweep_df = pandas.DataFrame(columns=self.columns)
-                                                self.sweep_df = self.sweep_df.append(pandas.DataFrame(data_line, columns=self.columns))
+                                                # self.sweep_df = self.sweep_df.concat(pandas.DataFrame(data_line, columns=self.columns))
+                                                self.sweep_df = pandas.concat([self.sweep_df, pandas.DataFrame(data_line, columns=self.columns)])
                                                 self.sweep_df.to_csv(self.csv_filename, index=False)
                                                 data_line = []
         return self.sweep_df
 
-def check_pandas_or_run(sim, dataframe, sim_sweep_csv, batch_size=1, config_file='./conf.ini'):
+def check_pandas_or_run(sim, dataframe, sim_sweep_csv, batch_size=1, list_bench=None, config_file='./conf.ini'):
     ld = {}
     ld['N'] = sim.accelerator.N
     ld['M'] = sim.accelerator.M
@@ -146,9 +147,8 @@ def check_pandas_or_run(sim, dataframe, sim_sweep_csv, batch_size=1, config_file
 
     if len(results) == 0:
         sweep_obj = SimulatorSweep(sim_sweep_csv, config_file)
-        dataframe = sweep_obj.sweep(sim, list_batch=[batch_size])
+        dataframe = sweep_obj.sweep(sim, list_batch=[batch_size], list_bench=list_bench)
         dataframe.to_csv(sim_sweep_csv, index=False)
         return lookup_pandas_dataframe(dataframe, ld)
     else:
         return results
-

@@ -277,8 +277,8 @@ def optimize_for_order(conv_params):
 
         best_cycles = None
         best_energy = None
-        min_cycles = min([x[-4] for x in results])
-        min_energy = min([x[-3] for x in results])
+        min_cycles = min([x[-2] for x in results])
+        min_energy = min([x[-1] for x in results])
         cycles_list = [x[-2] for x in results]
         energy_list = [x[-1] for x in results]
         for r in results:
@@ -481,7 +481,8 @@ def _optimize_for_order(conv_params, order_type, verbose=False):
                         continue
 
                     cycles = stats.total_cycles
-                    energy = stats.get_energy(energy_cost)
+                    energy_cc, energy_ram = stats.get_energy(energy_cost)
+                    energy = energy_cc + energy_ram
                     mem_cycles = stats.mem_stall_cycles
 
                     if best_cycles is None or best_cycles > cycles or (best_cycles == cycles and best_energy > energy):

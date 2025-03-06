@@ -56,22 +56,23 @@ class Stats(object):
         return ret
 
     def get_energy(self, energy_cost, dram_cost=15.e-3):
-        dyn_energy = (self.total_cycles - self.mem_stall_cycles) * energy_cost.core_dynamic_energy
+        dyn_energy_cc = (self.total_cycles - self.mem_stall_cycles) * energy_cost.core_dynamic_energy
 
-        dyn_energy += self.reads['wgt'] * energy_cost.wbuf_read_energy
-        dyn_energy += self.writes['wgt'] * energy_cost.wbuf_write_energy
+        dyn_energy_mem = 0
+        dyn_energy_mem += self.reads['wgt'] * energy_cost.wbuf_read_energy
+        dyn_energy_mem += self.writes['wgt'] * energy_cost.wbuf_write_energy
 
-        dyn_energy += self.reads['act'] * energy_cost.ibuf_read_energy
-        dyn_energy += self.writes['act'] * energy_cost.ibuf_write_energy
+        dyn_energy_mem += self.reads['act'] * energy_cost.ibuf_read_energy
+        dyn_energy_mem += self.writes['act'] * energy_cost.ibuf_write_energy
 
-        dyn_energy += self.reads['out'] * energy_cost.obuf_read_energy
-        dyn_energy += self.writes['out'] * energy_cost.obuf_write_energy
+        dyn_energy_mem += self.reads['out'] * energy_cost.obuf_read_energy
+        dyn_energy_mem += self.writes['out'] * energy_cost.obuf_write_energy
 
         # Assuming that the DRAM requires 6 pJ/bit
-        dyn_energy += self.reads['dram'] * dram_cost
-        dyn_energy += self.writes['dram'] * dram_cost
+        dyn_energy_mem += self.reads['dram'] * dram_cost
+        dyn_energy_mem += self.writes['dram'] * dram_cost
 
-        return dyn_energy
+        return dyn_energy_cc, dyn_energy_mem
 
     def get_energy_breakdown(self, energy_cost, dram_cost=15.e-3):
         core_energy = (self.total_cycles - self.mem_stall_cycles) * energy_cost.core_dynamic_energy
@@ -107,4 +108,3 @@ def get_energy_from_results(results, acc_obj):
     stats.writes['dram'] = int(results['DRAM Write'])
     energy = stats.get_energy(acc_obj)
     return energy
-

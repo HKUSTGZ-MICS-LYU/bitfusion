@@ -50,24 +50,24 @@ class Pipeline(object):
         ret += ', Final1: {}'.format(self.f1)
         return ret
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    rk = 1
-    ck = 3
-    wk = 1
+#     rk = 1
+#     ck = 3
+#     wk = 1
 
-    kmax = 4
+#     kmax = 4
 
-    c_pipe = PipeStage(None, ck, None)
-    print c_pipe
+#     c_pipe = PipeStage(None, ck, None)
+#     print(c_pipe)
 
-    k_pipe = Pipeline(c_pipe, rk, wk, kmax)
-    print k_pipe
+#     k_pipe = Pipeline(c_pipe, rk, wk, kmax)
+#     print(k_pipe)
 
-    rj = 5
-    cj = ck
-    wj = 5
+#     rj = 5
+#     cj = ck
+#     wj = 5
 
-    jmax = 4
-    j_pipe = Pipeline(k_pipe, rj, wj, jmax)
-    print j_pipe
+#     jmax = 4
+#     j_pipe = Pipeline(k_pipe, rj, wj, jmax)
+#     print(j_pipe)

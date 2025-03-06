@@ -57,6 +57,7 @@ class CactiSweep(object):
                 }
         parsed_results = {}
         for line in out:
+            line = str(line)
             line = line.rstrip()
             line = line.lstrip()
             if line:
@@ -80,7 +81,7 @@ class CactiSweep(object):
         cfg_dict = self.default_dict.copy()
         cfg_dict.update(index_dict)
         self._create_cfg(cfg_dict, self.cfg_file)
-        args = ('./'+os.path.basename(self.bin_file), "-infile", os.path.basename(self.cfg_file))
+        args = ('./'+os.path.basename(self.bin_file), "-infile", self.cfg_file)
         popen = subprocess.Popen(args, stdout=subprocess.PIPE, cwd=os.path.dirname(self.bin_file))
         popen.wait()
         output = popen.stdout
@@ -100,7 +101,7 @@ class CactiSweep(object):
             print('No entry found in {}, running cacti'.format(self.csv_file))
             row_dict = index_dict.copy()
             row_dict.update(self._run_cacti(index_dict))
-            self._df = self._df.append(pandas.DataFrame([row_dict]), ignore_index=True)
+            self._df = pandas.concat([self._df, pandas.DataFrame([row_dict])], ignore_index=True)
             self.update_csv()
             return self.locate(index_dict)
         else:

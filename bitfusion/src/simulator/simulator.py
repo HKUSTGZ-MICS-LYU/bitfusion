@@ -1,6 +1,6 @@
 import logging
 import math
-import ConfigParser
+import configparser
 import numpy as np
 
 from bitfusion.src.utils.utils import ceil_a_by_b, log2, lookup_pandas_dataframe
@@ -28,7 +28,7 @@ class Simulator(object):
 
         self.config_file = config_file
 
-        self.config = ConfigParser.ConfigParser()
+        self.config = configparser.ConfigParser()
         self.config.read(config_file)
 
         systolic_dim = [self.config.getint('accelerator', 'a'),
