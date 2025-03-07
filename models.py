@@ -10,11 +10,17 @@ from dnnweaver2.tensorOps.cnn import (
     leakyReLU, add, globalAvgPool
 )
 from dnnweaver2 import get_tensor
-from dnnweaver2.scalar.dtypes import FQDtype, FixedPoint, Int
+from dnnweaver2.scalar.dtypes import FQDtype, FixedPoint, Dtype
 
 import logging
 
 BATCH_SIZE = 16
+class Int(Dtype):
+    def __init__(self, bits):
+        self.bits = bits
+        self.int_bits = bits
+        self.frac_bits = 0
+        self.op_str = 'INT{}'.format(self.bits)
 
 def int2dtype(q):
     return Int(q)
