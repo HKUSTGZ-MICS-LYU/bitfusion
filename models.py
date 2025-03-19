@@ -25,6 +25,21 @@ class Int(Dtype):
 def int2dtype(q):
     return Int(q)
 
+def matmul_test(wq: list, aq: list):
+    g = Graph("MatMul", "MNIST", log_level=logging.INFO)
+
+    ATYPE = list(map(int2dtype, aq))
+    WTYPE = list(map(int2dtype, wq))
+
+    with g.as_default():
+        with g.name_scope('input'):
+            x = get_tensor(
+                shape=(BATCH_SIZE, 256), name='x', dtype = ATYPE[0],
+                trainable=False)
+        with g.name_scope('matmul'):
+            matmul1 = fc(x, 256, f_dtype=ATYPE[0], w_dtype=WTYPE[0])
+    return g
+
 def mlp_mnist(wq: list, aq: list):
     g = Graph("MLP", "MNIST", log_level=logging.INFO)
 
@@ -51,6 +66,8 @@ def lenet_mnist(wq: list, aq: list):
 
     ATYPE = list(map(int2dtype, aq))
     WTYPE = list(map(int2dtype, wq))
+
+    assert (len(ATYPE) == 4) and (len(WTYPE) == 4), "Invalid quantization scheme"
 
     with g.as_default():
         with g.name_scope('inputs'):
@@ -93,6 +110,9 @@ def vgg_cifar10(wq: list, aq: list):
 
     ATYPE = list(map(int2dtype, aq))
     WTYPE = list(map(int2dtype, wq))
+
+    assert (len(ATYPE) == 7) and (len(WTYPE) == 7), "Invalid quantization scheme"
+
     with g.as_default():
         with g.name_scope('inputs'):
             i = get_tensor(shape=(BATCH_SIZE, 32, 32, 3), 
@@ -140,10 +160,13 @@ def vgg_cifar10(wq: list, aq: list):
         with g.name_scope('fc3'):
             fc3 = fc(fc2, output_channels=10,
                     f_dtype=ATYPE[6], w_dtype=WTYPE[6])
-
     return g
 
+
 # TODO: Add more models here
+def resnet8_cifar100(wq: list, aq: list):
+    pass
+
 def squeezeNet_cifar100(wq: list, aq: list):
     pass
 

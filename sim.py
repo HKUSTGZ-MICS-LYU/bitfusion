@@ -57,14 +57,29 @@ def sim_results(g, bf_sim = None, batch_size = 16):
     }
 
 if __name__ == "__main__":
+    import sys
+    import json
     import time
-    from models import mlp_mnist, lenet_mnist, vgg_cifar10
+    from models import mlp_mnist, lenet_mnist, vgg_cifar10, matmul_test
+    
+    sim_config_file = sys.argv[1]
+
+    with open(sim_config_file, 'r') as f:
+        sim_config = json.load(f)
 
     start = time.time()
-    # g = mlp_mnist([8, 8, 8, 8], [8, 8, 8, 8])
-    # g = lenet_mnist([8, 8, 8, 8, 8], [8, 8, 8, 8, 8])
-    g = vgg_cifar10([8 for _ in range(7)], [8 for _ in range(7)])
+
+    model_name = sim_config['model_name']
+    if model_name == 'mlp':
+        g = mlp_mnist(sim_config['wq'], sim_config['aq'])
+    elif model_name == 'lenet':
+        g = lenet_mnist(sim_config['wq'], sim_config['aq'])
+    elif model_name == 'vgg':
+        g = vgg_cifar10(sim_config['wq'], sim_config['aq'])
+    else:
+        raise ValueError(f"Model {model_name} not supported.")
     res = sim_results(g)
     print("-"*50)
-    print(res)
+    for k, v in res.items():
+        print(f"{k}: {v}")
     print("Simulation Time:", time.time()-start)
