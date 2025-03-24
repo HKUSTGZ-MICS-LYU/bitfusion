@@ -67,8 +67,9 @@ if __name__ == "__main__":
     with open(sim_config_file, 'r') as f:
         sim_config = json.load(f)
 
-    start = time.time()
+    # print(get_default_simulator())
 
+    start = time.time()
     model_name = sim_config['model_name']
     if model_name == 'mlp':
         g = mlp_mnist(sim_config['wq'], sim_config['aq'])
@@ -76,6 +77,9 @@ if __name__ == "__main__":
         g = lenet_mnist(sim_config['wq'], sim_config['aq'])
     elif model_name == 'vgg':
         g = vgg_cifar10(sim_config['wq'], sim_config['aq'])
+    elif model_name == 'matmul':
+        g = matmul_test(sim_config['wq'], sim_config['aq'], 
+                        sim_config['n'], sim_config['m'], sim_config['k'])
     else:
         raise ValueError(f"Model {model_name} not supported.")
     res = sim_results(g)
