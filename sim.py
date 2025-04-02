@@ -60,7 +60,11 @@ if __name__ == "__main__":
     import sys
     import json
     import time
-    from models import mlp_mnist, lenet_mnist, vgg_cifar10, matmul_test
+    from models import (
+        mlp_mnist, lenet_mnist, vgg_cifar10, cmsiscnn_cifar10,
+        resnet8_cifar100, resnet18_cifar100,
+        matmul_test
+    )
     
     sim_config_file = sys.argv[1]
 
@@ -77,6 +81,12 @@ if __name__ == "__main__":
         g = lenet_mnist(sim_config['wq'], sim_config['aq'])
     elif model_name == 'vgg':
         g = vgg_cifar10(sim_config['wq'], sim_config['aq'])
+    elif model_name == 'cmsiscnn':
+        g = cmsiscnn_cifar10(sim_config['wq'], sim_config['aq'])
+    elif model_name == 'resnet8':
+        g = resnet8_cifar100(sim_config['wq'], sim_config['aq'])
+    elif model_name == 'resnet18':
+        g = resnet18_cifar100(sim_config['wq'], sim_config['aq'])
     elif model_name == 'matmul':
         g = matmul_test(sim_config['wq'], sim_config['aq'], 
                         sim_config['n'], sim_config['m'], sim_config['k'])
