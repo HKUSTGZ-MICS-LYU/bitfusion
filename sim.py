@@ -62,7 +62,7 @@ if __name__ == "__main__":
     import time
     from models import (
         mlp_mnist, lenet_mnist, vgg_cifar10, cmsiscnn_cifar10,
-        resnet8_cifar100, resnet18_cifar100,
+        resnet8, resnet18,
         matmul_test
     )
     
@@ -83,10 +83,12 @@ if __name__ == "__main__":
         g = vgg_cifar10(sim_config['wq'], sim_config['aq'])
     elif model_name == 'cmsiscnn':
         g = cmsiscnn_cifar10(sim_config['wq'], sim_config['aq'])
-    elif model_name == 'resnet8':
-        g = resnet8_cifar100(sim_config['wq'], sim_config['aq'])
-    elif model_name == 'resnet18':
-        g = resnet18_cifar100(sim_config['wq'], sim_config['aq'])
+    elif model_name == 'resnet8_cifar10':
+        g = resnet8(sim_config['wq'], sim_config['aq'], 10)
+    elif model_name == 'resnet8_cifar100':
+        g = resnet8(sim_config['wq'], sim_config['aq'], 100)
+    elif model_name == 'resnet18_cifar100':
+        g = resnet18(sim_config['wq'], sim_config['aq'], 100)
     elif model_name == 'matmul':
         g = matmul_test(sim_config['wq'], sim_config['aq'], 
                         sim_config['n'], sim_config['m'], sim_config['k'])

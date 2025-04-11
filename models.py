@@ -37,7 +37,7 @@ def matmul_test(wq: list, aq: list, N=16, K=256, M=256):
                 shape=(N, K), name='x', dtype = ATYPE[0],
                 trainable=False)
         with g.name_scope('matmul'):
-            matmul1 = fc(x, M, f_dtype=ATYPE[0], w_dtype=WTYPE[0])
+            matmul1 = fc(x, M, f_dtype=FQDtype.FXP32, w_dtype=WTYPE[0])
     return g
 
 def mlp_mnist(wq: list, aq: list):
@@ -52,13 +52,13 @@ def mlp_mnist(wq: list, aq: list):
                 shape=(BATCH_SIZE, 256), name='x', dtype = ATYPE[0],
                 trainable=False)
         with g.name_scope('fc1'):
-            fc1 = fc(x, 64, f_dtype=ATYPE[0], w_dtype=WTYPE[0])
+            fc1 = fc(x, 64, f_dtype=ATYPE[1], w_dtype=WTYPE[0])
         with g.name_scope('fc2'):
-            fc2 = fc(fc1, 64, f_dtype=ATYPE[1], w_dtype=WTYPE[1])
+            fc2 = fc(fc1, 64, f_dtype=ATYPE[2], w_dtype=WTYPE[1])
         with g.name_scope('fc3'):
-            fc3 = fc(fc2, 64, f_dtype=ATYPE[2], w_dtype=WTYPE[2])
+            fc3 = fc(fc2, 64, f_dtype=ATYPE[3], w_dtype=WTYPE[2])
         with g.name_scope('fc5'):
-            fc4 = fc(fc3, 10, f_dtype=ATYPE[3], w_dtype=WTYPE[3])
+            fc4 = fc(fc3, 10, f_dtype=FQDtype.FXP32, w_dtype=WTYPE[3])
     return g
 
 def lenet_mnist(wq: list, aq: list):
@@ -67,7 +67,7 @@ def lenet_mnist(wq: list, aq: list):
     ATYPE = list(map(int2dtype, aq))
     WTYPE = list(map(int2dtype, wq))
 
-    assert (len(ATYPE) == 4) and (len(WTYPE) == 4), "Invalid quantization scheme"
+    assert (len(ATYPE) == 5) and (len(WTYPE) == 5), "Invalid quantization scheme"
 
     with g.as_default():
         with g.name_scope('inputs'):
@@ -76,7 +76,7 @@ def lenet_mnist(wq: list, aq: list):
 
         with g.name_scope('conv0'):
             conv0 = conv(i, filters=6, kernel_size=5, pad='SAME', 
-                    c_dtype=ATYPE[0], w_dtype=WTYPE[0])
+                    c_dtype=ATYPE[1], w_dtype=WTYPE[0])
             
         with g.name_scope('pool0'):
             pool0 = maxPool(conv0, pooling_kernel=(1,2,2,1),
@@ -84,7 +84,7 @@ def lenet_mnist(wq: list, aq: list):
 
         with g.name_scope('conv1'):
             conv1 = conv(pool0, filters=16, kernel_size=5, pad='SAME',
-                    c_dtype=ATYPE[1], w_dtype=WTYPE[1])
+                    c_dtype=ATYPE[2], w_dtype=WTYPE[1])
         with g.name_scope('pool1'):
             pool1 = maxPool(conv1, pooling_kernel=(1,2,2,1), 
                             stride=(1,2,2,1), pad='VALID')
@@ -94,15 +94,15 @@ def lenet_mnist(wq: list, aq: list):
 
         with g.name_scope('fc1'):
             fc1 = fc(flatten1, output_channels=64,
-                     f_dtype=ATYPE[2], w_dtype=WTYPE[2])
+                     f_dtype=ATYPE[3], w_dtype=WTYPE[2])
 
         with g.name_scope('fc2'):
             fc2 = fc(fc1, output_channels=32,
-                    f_dtype=ATYPE[3], w_dtype=WTYPE[3])
+                    f_dtype=ATYPE[4], w_dtype=WTYPE[3])
         
         with g.name_scope('fc3'):
             fc3 = fc(fc2, output_channels=10,
-                    f_dtype=ATYPE[4], w_dtype=WTYPE[4])
+                    f_dtype=FQDtype.FXP32, w_dtype=WTYPE[4])
     return g
 
 def vgg_cifar10(wq: list, aq: list):
@@ -120,28 +120,28 @@ def vgg_cifar10(wq: list, aq: list):
 
         with g.name_scope('conv0'):
             conv0 = conv(i, filters=64, kernel_size=3, pad='SAME', 
-                    c_dtype=ATYPE[0], w_dtype=WTYPE[0])
+                    c_dtype=ATYPE[1], w_dtype=WTYPE[0])
         with g.name_scope('pool0'):
             pool0 = maxPool(conv0, pooling_kernel=(1,2,2,1),
                              stride=(1,2,2,1), pad='VALID')
 
         with g.name_scope('conv1'):
             conv1 = conv(pool0, filters=128, kernel_size=3, pad='SAME',
-                    c_dtype=ATYPE[1], w_dtype=WTYPE[1])
+                    c_dtype=ATYPE[2], w_dtype=WTYPE[1])
         with g.name_scope('pool1'):
             pool1 = maxPool(conv1, pooling_kernel=(1,2,2,1), 
                             stride=(1,2,2,1), pad='VALID')
 
         with g.name_scope('conv2'):
             conv2 = conv(pool1, filters=256, kernel_size=3, pad='SAME',
-                    c_dtype=ATYPE[2], w_dtype=WTYPE[2])
+                    c_dtype=ATYPE[3], w_dtype=WTYPE[2])
         with g.name_scope('pool2'):
             pool2 = maxPool(conv2, pooling_kernel=(1,2,2,1), 
                             stride=(1,2,2,1), pad='VALID')
 
         with g.name_scope('conv3'):
             conv3 = conv(pool2, filters=256, kernel_size=3, pad='SAME',
-                    c_dtype=ATYPE[3], w_dtype=WTYPE[3])
+                    c_dtype=ATYPE[4], w_dtype=WTYPE[3])
         with g.name_scope('pool3'):
             pool3 = maxPool(conv3, pooling_kernel=(1,2,2,1), 
                             stride=(1,2,2,1), pad='VALID')
@@ -151,15 +151,15 @@ def vgg_cifar10(wq: list, aq: list):
 
         with g.name_scope('fc1'):
             fc1 = fc(flatten1, output_channels=4096,
-                     f_dtype=ATYPE[4], w_dtype=WTYPE[4])
+                     f_dtype=ATYPE[5], w_dtype=WTYPE[4])
 
         with g.name_scope('fc2'):
             fc2 = fc(fc1, output_channels=4096,
-                    f_dtype=ATYPE[5], w_dtype=WTYPE[5])
+                    f_dtype=ATYPE[6], w_dtype=WTYPE[5])
 
         with g.name_scope('fc3'):
             fc3 = fc(fc2, output_channels=10,
-                    f_dtype=ATYPE[6], w_dtype=WTYPE[6])
+                    f_dtype=FQDtype.FXP32, w_dtype=WTYPE[6])
     return g
 
 def cmsiscnn_cifar10(wq: list, aq: list):
@@ -178,7 +178,7 @@ def cmsiscnn_cifar10(wq: list, aq: list):
         # First conv block
         with g.name_scope('conv0'):
             conv0 = conv(i, filters=32, kernel_size=5, pad='SAME', 
-                    c_dtype=ATYPE[0], w_dtype=WTYPE[0])
+                    c_dtype=ATYPE[1], w_dtype=WTYPE[0])
         with g.name_scope('pool0'):
             pool0 = maxPool(conv0, pooling_kernel=(1,2,2,1),
                             stride=(1,2,2,1), pad='VALID')
@@ -186,7 +186,7 @@ def cmsiscnn_cifar10(wq: list, aq: list):
         # Second conv block
         with g.name_scope('conv1'):
             conv1 = conv(pool0, filters=32, kernel_size=5, pad='SAME',
-                    c_dtype=ATYPE[1], w_dtype=WTYPE[1])
+                    c_dtype=ATYPE[2], w_dtype=WTYPE[1])
         with g.name_scope('pool1'):
             pool1 = maxPool(conv1, pooling_kernel=(1,2,2,1),
                             stride=(1,2,2,1), pad='VALID')
@@ -194,7 +194,7 @@ def cmsiscnn_cifar10(wq: list, aq: list):
         # Third conv block
         with g.name_scope('conv2'):
             conv2 = conv(pool1, filters=64, kernel_size=5, pad='SAME',
-                    c_dtype=ATYPE[2], w_dtype=WTYPE[2])
+                    c_dtype=ATYPE[3], w_dtype=WTYPE[2])
         with g.name_scope('pool2'):
             pool2 = maxPool(conv2, pooling_kernel=(1,2,2,1),
                             stride=(1,2,2,1), pad='VALID')
@@ -205,11 +205,11 @@ def cmsiscnn_cifar10(wq: list, aq: list):
         
         with g.name_scope('fc'):
             fc1 = fc(flatten1, output_channels=10,
-                    f_dtype=ATYPE[3], w_dtype=WTYPE[3])
+                    f_dtype=FQDtype.FXP32, w_dtype=WTYPE[3])
     
     return g
 
-def resnet8_cifar100(wq: list, aq: list):
+def resnet8(wq: list, aq: list, n_classes=10):
     g = Graph("ResNet-8", "CIFAR-100", log_level=logging.INFO)
     
     ATYPE = list(map(int2dtype, aq))
@@ -225,82 +225,82 @@ def resnet8_cifar100(wq: list, aq: list):
         # Initial convolution
         with g.name_scope('conv1'):
             conv1 = conv(i, filters=64, kernel_size=3, pad='SAME',
-                    c_dtype=ATYPE[0], w_dtype=WTYPE[0])
+                    c_dtype=ATYPE[1], w_dtype=WTYPE[0])
             
         # Layer 1 (1 BasicBlock)
         with g.name_scope('layer1_block1_conv1'):
             l1b1_conv1 = conv(conv1, filters=64, kernel_size=3, pad='SAME',
-                          c_dtype=ATYPE[1], w_dtype=WTYPE[1])
+                          c_dtype=ATYPE[2], w_dtype=WTYPE[1])
         with g.name_scope('layer1_block1_conv2'):
             l1b1_conv2 = conv(l1b1_conv1, filters=64, kernel_size=3, pad='SAME',
-                          c_dtype=ATYPE[2], w_dtype=WTYPE[2])
+                          c_dtype=ATYPE[3], w_dtype=WTYPE[2])
         
         # Identity shortcut (no parameter needed)
-        l1b1_out = add((l1b1_conv2, conv1), dtype=ATYPE[2])
+        l1b1_out = add((l1b1_conv2, conv1), dtype=ATYPE[3])
         
         # Layer 2 (1 BasicBlock with downsampling)
         with g.name_scope('layer2_block1_conv1'):
             l2b1_conv1 = conv(l1b1_out, filters=128, kernel_size=3, 
                           stride=(1,2,2,1), pad='SAME',
-                          c_dtype=ATYPE[3], w_dtype=WTYPE[3])
+                          c_dtype=ATYPE[4], w_dtype=WTYPE[3])
         with g.name_scope('layer2_block1_conv2'):
             l2b1_conv2 = conv(l2b1_conv1, filters=128, kernel_size=3, pad='SAME',
-                          c_dtype=ATYPE[4], w_dtype=WTYPE[4])
+                          c_dtype=ATYPE[5], w_dtype=WTYPE[4])
         
         # Shortcut with 1x1 conv due to dimension change
         with g.name_scope('layer2_shortcut'):
             l2b1_shortcut = conv(l1b1_out, filters=128, kernel_size=1, 
                              stride=(1,2,2,1), pad='SAME',
-                             c_dtype=ATYPE[5], w_dtype=WTYPE[5])
+                             c_dtype=ATYPE[6], w_dtype=WTYPE[5])
         
-        l2b1_out = add((l2b1_conv2, l2b1_shortcut), dtype=ATYPE[5])
+        l2b1_out = add((l2b1_conv2, l2b1_shortcut), dtype=ATYPE[6])
         
         # Layer 3 (1 BasicBlock with downsampling)
         with g.name_scope('layer3_block1_conv1'):
             l3b1_conv1 = conv(l2b1_out, filters=256, kernel_size=3, 
                           stride=(1,2,2,1), pad='SAME',
-                          c_dtype=ATYPE[6], w_dtype=WTYPE[6])
+                          c_dtype=ATYPE[7], w_dtype=WTYPE[6])
         with g.name_scope('layer3_block1_conv2'):
             l3b1_conv2 = conv(l3b1_conv1, filters=256, kernel_size=3, pad='SAME',
-                          c_dtype=ATYPE[7], w_dtype=WTYPE[7])
+                          c_dtype=ATYPE[8], w_dtype=WTYPE[7])
         
         # Shortcut with 1x1 conv due to dimension change
         with g.name_scope('layer3_shortcut'):
             l3b1_shortcut = conv(l2b1_out, filters=256, kernel_size=1, 
                              stride=(1,2,2,1), pad='SAME',
-                             c_dtype=ATYPE[8], w_dtype=WTYPE[8])
+                             c_dtype=ATYPE[9], w_dtype=WTYPE[8])
         
-        l3b1_out = add((l3b1_conv2, l3b1_shortcut), dtype=ATYPE[8])
+        l3b1_out = add((l3b1_conv2, l3b1_shortcut), dtype=ATYPE[9])
         
         # Layer 4 (1 BasicBlock with downsampling)
         with g.name_scope('layer4_block1_conv1'):
             l4b1_conv1 = conv(l3b1_out, filters=512, kernel_size=3, 
                           stride=(1,2,2,1), pad='SAME',
-                          c_dtype=ATYPE[9], w_dtype=WTYPE[9])
+                          c_dtype=ATYPE[10], w_dtype=WTYPE[9])
         with g.name_scope('layer4_block1_conv2'):
             l4b1_conv2 = conv(l4b1_conv1, filters=512, kernel_size=3, pad='SAME',
-                          c_dtype=ATYPE[10], w_dtype=WTYPE[10])
+                          c_dtype=ATYPE[11], w_dtype=WTYPE[10])
         
         # Shortcut with 1x1 conv due to dimension change
         with g.name_scope('layer4_shortcut'):
             l4b1_shortcut = conv(l3b1_out, filters=512, kernel_size=1, 
                              stride=(1,2,2,1), pad='SAME',
-                             c_dtype=ATYPE[11], w_dtype=WTYPE[11])
+                             c_dtype=ATYPE[12], w_dtype=WTYPE[11])
         
-        l4b1_out = add((l4b1_conv2, l4b1_shortcut), dtype=ATYPE[11])
+        l4b1_out = add((l4b1_conv2, l4b1_shortcut), dtype=ATYPE[12])
         
         # Global average pooling
         with g.name_scope('avg_pool'):
-            avg_pool = globalAvgPool(l4b1_out)
+            avg_pool = globalAvgPool(l4b1_out, dtype=ATYPE[12])
             
         # FC layer
         with g.name_scope('fc'):
-            fc_out = fc(avg_pool, output_channels=100,
-                      f_dtype=ATYPE[12], w_dtype=WTYPE[12])
+            fc_out = fc(avg_pool, output_channels=n_classes,
+                      f_dtype=FQDtype.FXP32, w_dtype=WTYPE[12])
         
     return g
 
-def resnet18_cifar100(wq: list, aq: list):
+def resnet18(wq: list, aq: list, n_classes=100):
     g = Graph("ResNet-18", "CIFAR-100", log_level=logging.INFO)
     
     ATYPE = list(map(int2dtype, aq))
@@ -319,7 +319,7 @@ def resnet18_cifar100(wq: list, aq: list):
         # Initial convolution
         with g.name_scope('conv1'):
             conv1 = conv(i, filters=64, kernel_size=3, pad='SAME',
-                    c_dtype=ATYPE[q_idx], w_dtype=WTYPE[q_idx])
+                    c_dtype=ATYPE[q_idx+1], w_dtype=WTYPE[q_idx])
             q_idx += 1
         
         # Track the current tensor and number of channels
@@ -340,13 +340,13 @@ def resnet18_cifar100(wq: list, aq: list):
                     with g.name_scope(f'conv1'):
                         res_conv1 = conv(current, filters=out_channels, kernel_size=3, 
                                         stride=stride, pad='SAME',
-                                        c_dtype=ATYPE[q_idx], w_dtype=WTYPE[q_idx])
+                                        c_dtype=ATYPE[q_idx+1], w_dtype=WTYPE[q_idx])
                         q_idx += 1
                     
                     with g.name_scope(f'conv2'):
                         res_conv2 = conv(res_conv1, filters=out_channels, kernel_size=3, 
                                         pad='SAME',
-                                        c_dtype=ATYPE[q_idx], w_dtype=WTYPE[q_idx])
+                                        c_dtype=ATYPE[q_idx+1], w_dtype=WTYPE[q_idx])
                         q_idx += 1
                     
                     # Shortcut path
@@ -355,13 +355,13 @@ def resnet18_cifar100(wq: list, aq: list):
                         with g.name_scope(f'shortcut'):
                             shortcut = conv(current, filters=out_channels, kernel_size=1, 
                                            stride=stride, pad='SAME',
-                                           c_dtype=ATYPE[q_idx], w_dtype=WTYPE[q_idx])
+                                           c_dtype=ATYPE[q_idx+1], w_dtype=WTYPE[q_idx])
                             q_idx += 1
                     else:
                         shortcut = current
                     
                     # Add residual and shortcut
-                    current = add((res_conv2, shortcut), dtype=ATYPE[q_idx-1])
+                    current = add((res_conv2, shortcut))
                 
                 # Update in_channels for next block
                 in_channels = out_channels
@@ -372,8 +372,8 @@ def resnet18_cifar100(wq: list, aq: list):
             
         # FC layer
         with g.name_scope('fc'):
-            fc_out = fc(avg_pool, output_channels=100,
-                      f_dtype=ATYPE[q_idx], w_dtype=WTYPE[q_idx])
+            fc_out = fc(avg_pool, output_channels=n_classes,
+                      f_dtype=FQDtype.FXP32, w_dtype=WTYPE[q_idx])
         
     return g
 
