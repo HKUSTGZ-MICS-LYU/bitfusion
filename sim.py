@@ -63,7 +63,7 @@ if __name__ == "__main__":
     from models import (
         mlp_mnist, lenet_mnist, vgg_cifar10, cmsiscnn_cifar10,
         resnet8, resnet18,
-        matmul_test
+        matmul_test, conv2d_test, conv2d_2l_test
     )
     
     sim_config_file = sys.argv[1]
@@ -92,6 +92,10 @@ if __name__ == "__main__":
     elif model_name == 'matmul':
         g = matmul_test(sim_config['wq'], sim_config['aq'], 
                         sim_config['n'], sim_config['m'], sim_config['k'])
+    elif model_name == 'conv2d':
+        g = conv2d_test(sim_config['wq'], sim_config['aq'], 
+                   sim_config['h'], sim_config['w'], sim_config['c'],
+                sim_config['k'], sim_config['ks'])
     else:
         raise ValueError(f"Model {model_name} not supported.")
     res = sim_results(g)

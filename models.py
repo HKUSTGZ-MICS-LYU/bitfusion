@@ -40,6 +40,44 @@ def matmul_test(wq: list, aq: list, N=16, K=256, M=256):
             matmul1 = fc(x, M, f_dtype=FQDtype.FXP32, w_dtype=WTYPE[0])
     return g
 
+def conv2d_test(wq: list, aq: list, H=32, W=32, C=3, K=64, KS=3):
+    g = Graph("Conv2D", "CIFAR-10", log_level=logging.INFO)
+
+    ATYPE = list(map(int2dtype, aq))
+    WTYPE = list(map(int2dtype, wq))
+
+    with g.as_default():
+        with g.name_scope('input'):
+            x = get_tensor(
+                shape=(BATCH_SIZE, H, W, C), name='x', dtype = ATYPE[0],
+                trainable=False)
+        with g.name_scope('conv2d'):
+            conv1 = conv(x, filters=K, kernel_size=KS, pad='VALID',
+                    c_dtype=FQDtype.FXP32, w_dtype=WTYPE[0])
+    return g
+
+def conv2d_2l_test(wq: list = [8,8,8], aq: list = [8,8,8]):
+    g = Graph("Conv2D", "CIFAR-10", log_level=logging.INFO)
+
+    ATYPE = list(map(int2dtype, aq))
+    WTYPE = list(map(int2dtype, wq))
+
+    with g.as_default():
+        with g.name_scope('input'):
+            x = get_tensor(
+                shape=(BATCH_SIZE, 32, 32, 8), name='x', dtype = ATYPE[0],
+                trainable=False)
+        with g.name_scope('conv2d'):
+            conv1 = conv(x, filters=8, kernel_size=3, pad='SAME', 
+                    c_dtype=ATYPE[1], w_dtype=WTYPE[0])
+        with g.name_scope('conv2d2'):
+            conv2 = conv(conv1, filters=8, kernel_size=3, pad='SAME', 
+                    c_dtype=ATYPE[2], w_dtype=WTYPE[1])
+        with g.name_scope('conv2d3'):
+            conv3 = conv(conv2, filters=8, kernel_size=3, pad='SAME', 
+                    c_dtype=FQDtype.FXP32, w_dtype=WTYPE[2])
+    return g
+
 def mlp_mnist(wq: list, aq: list):
     g = Graph("MLP", "MNIST", log_level=logging.INFO)
 

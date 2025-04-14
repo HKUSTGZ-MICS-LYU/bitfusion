@@ -478,10 +478,10 @@ class Simulator(object):
             iprec = op.data.dtype.bits
             wprec = op.weights.dtype.bits
 
-            if op.data.op is None:
-                im2col = True # im2col for first layer
-            else:
-                im2col = False
+            # if op.data.op is None:
+            #     im2col = True # im2col for first layer
+            # else:
+            #     im2col = False
             return self.get_conv_cycles(K,
                                         O,
                                         S,
