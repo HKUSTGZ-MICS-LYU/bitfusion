@@ -1,4 +1,4 @@
-
+import os
 import logging
 import warnings
 import dnnweaver2
@@ -16,45 +16,7 @@ from bitfusion.src.benchmarks.benchmarks import (
     get_bench_numbers
 )
 from bitfusion.src.simulator.simulator import Simulator
-
-warnings.filterwarnings('ignore')
-def get_default_simulator():
-    bf_sim = Simulator('bitfusion.ini', verbose=False)
-    return bf_sim
-
-def sim_results(g, bf_sim = None, batch_size = 16):
-    if bf_sim is None:
-        bf_sim = get_default_simulator()
-
-    stats = get_bench_numbers(g, bf_sim, batch_size=batch_size)
-
-    total_cycles = 0
-    total_stall = 0
-    total_energy = 0
-    total_reads = 0
-    total_writes = 0
-
-    for layer in stats:
-        cycles = stats[layer].total_cycles
-        reads = stats[layer].reads['dram']
-        writes = stats[layer].writes['dram']
-        stalls = stats[layer].mem_stall_cycles
-        # print("Layer -", layer)
-        # print("Cycles:", cycles)
-        cc_energy, mem_energy = stats[layer].get_energy(bf_sim.get_energy_cost())
-        # print("Energy:", cc_energy, mem_energy)
-        total_cycles += cycles
-        total_stall += stalls
-        total_energy += cc_energy + mem_energy
-        total_reads += reads
-        total_writes += writes
-    return {
-        'Cycles': total_cycles,
-        'Stall': total_stall,
-        'Energy': total_energy,
-        'Reads': total_reads,
-        'Writes': total_writes
-    }
+from sim_utils import sim_results
 
 if __name__ == "__main__":
     import sys

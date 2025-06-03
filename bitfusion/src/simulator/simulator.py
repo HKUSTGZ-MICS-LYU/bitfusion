@@ -30,7 +30,7 @@ class Simulator(object):
 
         self.config = configparser.ConfigParser()
         self.config.read(config_file)
-
+        self.bitfusion_dir = os.path.dirname(os.path.realpath(__file__)) + "/../../../"
         systolic_dim = [self.config.getint('accelerator', 'a'),
                              1,
                              self.config.getint('accelerator', 'c')]
@@ -179,7 +179,7 @@ class Simulator(object):
         self.logger.debug('\tWrite Energy                : {0:>8.4f} pJ/bit'.format(obuf_write_energy * 1.e3))
         ##################################################
         # Get stats for systolic array
-        core_csv = os.path.join('./results', 'systolic_array_synth.csv')
+        core_csv = os.path.join(self.bitfusion_dir +'results', 'systolic_array_synth.csv')
         core_synth_data = pandas.read_csv(core_csv)
 
         lookup_dict = {}
@@ -300,7 +300,7 @@ class Simulator(object):
         self.logger.debug('\tWrite Energy                : {0:>8.4f} pJ/bit'.format(obuf_write_energy * 1.e3))
         ##################################################
         # Get stats for systolic array
-        core_csv = os.path.join('./results', 'systolic_array_synth.csv')
+        core_csv = os.path.join(self.bitfusion_dir +'results', 'systolic_array_synth.csv')
         core_synth_data = pandas.read_csv(core_csv)
 
         lookup_dict = {}
