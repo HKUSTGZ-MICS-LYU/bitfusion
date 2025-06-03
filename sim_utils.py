@@ -28,7 +28,7 @@ def sim_results(g: Graph, bf_sim = None, batch_size = 16):
         bf_sim = get_default_simulator()
 
     stats = get_bench_numbers(g, bf_sim, batch_size=batch_size)
-    print(g.op_registry)
+    
     total_cycles = 0
     total_stall = 0
     total_energy = 0
