@@ -1041,7 +1041,8 @@ class BatchNorm(NodeOp):
         return self.data.shape
 
     def _get_output_dtype(self):
-        return FixedPoint(32, self.data.dtype.frac_bits + self.scale.dtype.frac_bits)
+        # return FixedPoint(32, self.data.dtype.frac_bits + self.scale.dtype.frac_bits)
+        return self.data.dtype
 
     def get_ops(self):
         ops = self.data.size
