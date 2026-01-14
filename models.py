@@ -40,7 +40,7 @@ def matmul_test(wq: list, aq: list, N=16, K=256, M=256):
             matmul1 = fc(x, M, f_dtype=FQDtype.FXP32, w_dtype=WTYPE[0])
     return g
 
-def conv2d_test(wq: list, aq: list, H=32, W=32, C=3, K=64, KS=3):
+def conv2d_test(wq: list, aq: list, H=32, W=32, C=3, K=64, KS=3, S=1):
     g = Graph("Conv2D", "CIFAR-10", log_level=logging.INFO)
 
     ATYPE = list(map(int2dtype, aq))
@@ -52,8 +52,9 @@ def conv2d_test(wq: list, aq: list, H=32, W=32, C=3, K=64, KS=3):
                 shape=(BATCH_SIZE, H, W, C), name='x', dtype = ATYPE[0],
                 trainable=False)
         with g.name_scope('conv2d'):
-            conv1 = conv(x, filters=K, kernel_size=KS, pad='VALID',
-                    c_dtype=FQDtype.FXP32, w_dtype=WTYPE[0])
+            conv1 = conv(x, filters=K, kernel_size=KS, pad='VALID', 
+                         stride=(1, S, S, 1),
+                         c_dtype=FQDtype.FXP32, w_dtype=WTYPE[0])
     return g
 
 def conv2d_2l_test(wq: list = [8,8,8], aq: list = [8,8,8]):

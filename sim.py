@@ -57,7 +57,7 @@ if __name__ == "__main__":
     elif model_name == 'conv2d':
         g = conv2d_test(sim_config['wq'], sim_config['aq'], 
                    sim_config['h'], sim_config['w'], sim_config['c'],
-                sim_config['k'], sim_config['ks'])
+                sim_config['k'], sim_config['ks'], sim_config['s'])
     else:
         raise ValueError(f"Model {model_name} not supported.")
     res = sim_results(g)

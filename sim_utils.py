@@ -34,7 +34,8 @@ def sim_results(g: Graph, bf_sim = None, batch_size = 16):
     total_energy = 0
     total_reads = 0
     total_writes = 0
-
+    layer_latnecy = []
+    layer_names = []
     for layer in stats:
         cycles = stats[layer].total_cycles
         reads = stats[layer].reads['dram']
@@ -49,6 +50,10 @@ def sim_results(g: Graph, bf_sim = None, batch_size = 16):
         total_energy += cc_energy + mem_energy
         total_reads += reads
         total_writes += writes
+        layer_latnecy.append(cycles)
+        layer_names.append(layer)
+    # print(layer_names)
+    # print(layer_latnecy)
     return {
         'Cycles': total_cycles,
         'Stall': total_stall,
